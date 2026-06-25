@@ -1,10 +1,10 @@
-BANCO DE DADOS ONDAS
+-- BANCO DE DADOS ONDAS
 
 CREATE DATABASE IF NOT EXISTS bd_ondas
   CHARACTER SET utf8mb4
   COLLATE utf8mb4_unicode_ci;
 
-USE bd_ondas
+USE bd_ondas;
 
 
 -- usuario
@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS usuario (
     id INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
-    senha VARCHAR(10) NOT NULL,
+    senha VARCHAR(300) NOT NULL,
     criado_em  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -29,6 +29,20 @@ CREATE TABLE IF NOT EXISTS artista (
         FOREIGN KEY (usuario_id) REFERENCES usuario(id)
         ON DELETE CASCADE
 );
+
+
+-- album (1:n com musica)
+
+CREATE TABLE IF NOT EXISTS album (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    titulo VARCHAR(150) NOT NULL,
+    artista_id INT,
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_album_artista
+        FOREIGN KEY (artista_id) REFERENCES artista(id)
+        ON DELETE SET NULL
+);
+
 
 -- musica
 
@@ -46,20 +60,6 @@ CREATE TABLE IF NOT EXISTS musica (
         FOREIGN KEY (album_id) REFERENCES album(id)
         ON DELETE SET NULL
 );
-
-
--- album (1:n com musica)
-
-CREATE TABLE IF NOT EXISTS album (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    titulo VARCHAR(150) NOT NULL,
-    artista_id INT,
-    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_album_artista
-        FOREIGN KEY (artista_id) REFERENCES artista(id)
-        ON DELETE SET NULL
-);
-
 
 -- playlist
 
@@ -111,7 +111,7 @@ CREATE TABLE IF NOT EXISTS comentario (
 
 CREATE TABLE IF NOT EXISTS review (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    nota INT NOT NULL CHECK (nota BETWEEN 1 AND 5)
+    nota INT NOT NULL CHECK (nota BETWEEN 1 AND 5),
     descricao TEXT,
     usuario_id INT NOT NULL,
     musica_id INT NOT NULL,
