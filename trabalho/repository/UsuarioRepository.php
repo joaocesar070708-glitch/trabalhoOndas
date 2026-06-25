@@ -52,12 +52,6 @@ public function salvar(Usuario $usuario): bool {
     return $resultado;
 }
 
-        if ($resultado) {
-            $usuario->registrarIdGerado((int) $this->pdo->lastInsertId());
-        }
-
-        return $resultado;
-    }
 
     public function atualizar(int $id, string $nome, string $email): bool {
         $usuario = $this->buscarPorId($id);

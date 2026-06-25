@@ -1,8 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../config/database.php';
-require_once __DIR__ . '/../entity/Review.php';
-
+require_once __DIR__ . '/../entity/reviews.php';
 class ReviewRepository {
 
     private PDO $pdo;
