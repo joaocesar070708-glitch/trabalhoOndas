@@ -1,10 +1,15 @@
 <?php
 
 require_once __DIR__ . '/../includes/auth.php';
-require_once __DIR__ . '/../repository/PokemonRepository.php';
+require_once __DIR__ . '/../repository/UsuarioRepository.php';
 
-$repo     = new PokemonRepository();
-$pokemons = $repo->listarPorUsuario($_SESSION['usuario_id']);
+$repo = new UsuarioRepository();
+$user = $repo->buscarPorId($_SESSION['usuario_id']);
+
+if ($user === null) {
+    header('Location: login.php');
+    exit;
+}
 
 require_once __DIR__ . '/../includes/header.php';
 ?>
