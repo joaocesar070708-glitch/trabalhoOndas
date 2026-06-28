@@ -79,6 +79,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <button type="submit" class="btn btn-primary btn-full">Entrar</button>
+    <p class="login-hint">
+  Não tem uma conta? <a href="createUser.php">Criar conta</a>
+</p>
   </form>
 
 </div>
