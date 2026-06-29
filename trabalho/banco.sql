@@ -1,24 +1,17 @@
-DROP DATABASE IF EXISTS bd_ondas;
-
-CREATE DATABASE bd_ondas
-  CHARACTER SET utf8mb4
-  COLLATE utf8mb4_unicode_ci;
-
-USE bd_ondas;
-
-CREATE TABLE usuario (
+CREATE TABLE IF NOT EXISTS usuario (
     usuario_id INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
     senha VARCHAR(300) NOT NULL,
-    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    foto_perfil VARCHAR(255) DEFAULT NULL
 );
 
-CREATE TABLE review (
+CREATE TABLE IF NOT EXISTS review (
     id_review INT PRIMARY KEY AUTO_INCREMENT,
     usuario_id INT,
     titulo_musica VARCHAR(150) NOT NULL,
-    nome_artista VARCHAR(150),
+    nome_artista VARCHAR(150) NOT NULL,
     nome_album VARCHAR(150),
     nota INT NOT NULL CHECK (nota BETWEEN 1 AND 5),
     comentario TEXT,

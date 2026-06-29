@@ -21,6 +21,11 @@ if (!empty($_GET['excluir'])) {
     header('Location: index.php');
     exit;
 }
+if (!empty($_get['atualizar'])){
+
+  
+}
+
 
 $reviews = $repoReview->listarPorUsuario($user->getId());
 
@@ -46,9 +51,77 @@ require_once __DIR__ . '/../includes/header.php';
 
 <section class="home-hero">
   <p class="home-eyebrow">Seu diário</p>
-  <h1>Olá, <?= htmlspecialchars($user->getNome()) ?></h1>
+  <div class="hero-nome-wrapper">
+    <a href="editarPerfil.php" class="avatar-link">
+    <?php if (!empty($user->getFotoPerfil())): ?>
+<img src="/trabalhoOndas/uploads/<?= htmlspecialchars($user->getFotoPerfil()) ?>" alt="Foto de perfil" class="avatar-img">      
+<?php else: ?>
+ <img src="/trabalhoOndas/uploads/307ce493-b254-4b2d-8ba4-d12c080d6651.jpg" alt="Foto padrão" class="avatar-img">
+       <?php endif; ?>
+      <span class="avatar-overlay">Editar perfil</span>
+    </a>
+    <h1>Olá, <?= htmlspecialchars($user->getNome()) ?></h1>
+  </div>
   <p>Aqui estão as músicas que você já avaliou.</p>
 </section>
+
+<style>
+  .hero-nome-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .avatar-link {
+    position: relative;
+    display: block;
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    text-decoration: none;
+  }
+
+  .avatar-img,
+  .avatar-placeholder {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .avatar-placeholder {
+    background: linear-gradient(135deg, #FF6B4A, #7A2E1E);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 1.6rem;
+    font-weight: bold;
+  }
+
+  .avatar-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    border-radius: 50%;
+    letter-spacing: 0.03em;
+  }
+
+  .avatar-link:hover .avatar-overlay {
+    opacity: 1;
+  }
+</style>
 
 <?php if (empty($reviews)): ?>
   <div class="feed-empty">
@@ -74,6 +147,7 @@ require_once __DIR__ . '/../includes/header.php';
           </p>
           <a href="index.php?excluir=<?= $review->getId() ?>" 
             onclick="return confirm('Certeza que deseja excluir esta review?')">Excluir</a>
+          <a href="editarReview.php?id=<?= $review->getId() ?>">Editar</a>
         </div>
       </article>
     <?php endforeach; ?>
@@ -82,4 +156,3 @@ require_once __DIR__ . '/../includes/header.php';
 <?php endif; ?>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
-
