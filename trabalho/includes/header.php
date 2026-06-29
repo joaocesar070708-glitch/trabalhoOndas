@@ -15,7 +15,10 @@
     <nav class="nav">
       <a href="../pages/crudMusicas.php">+ Novas Músicas</a>
       <a href="../pages/playlist.php">Criar Playlist</a>
-      <a href="../pages/areaDoArtista.php">Área do Artista</a>
+      <form method="post" action="exibicaomusica.php" style="display:flex">
+    <input type="text" name="id" placeholder="Digite o ID da música">
+    <button type="submit">🔍</button>
+</form>
     </nav>
 
     <div class="header-user">
