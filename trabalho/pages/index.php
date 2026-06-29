@@ -21,6 +21,11 @@ if (!empty($_GET['excluir'])) {
     header('Location: index.php');
     exit;
 }
+if (!empty($_get['atualizar'])){
+
+  
+}
+
 
 
 $reviews = $repoReview->listarPorUsuario($user->getId());
@@ -75,6 +80,7 @@ require_once __DIR__ . '/../includes/header.php';
           </p>
           <a href="index.php?excluir=<?= $review->getId() ?>" 
             onclick="return confirm('Certeza que deseja excluir esta review?')">Excluir</a>
+          <a href="editarReview.php?id=<?= $review->getId() ?>">Editar</a>
         </div>
       </article>
     <?php endforeach; ?>
