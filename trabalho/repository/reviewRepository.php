@@ -58,4 +58,20 @@ class ReviewRepository {
         $stmt = $this->pdo->prepare('DELETE FROM review WHERE id_review = :id');
         return $stmt->execute([':id' => $id]);
     }
+
+
+
+
+ 
+/**Atualiza a nota e a descrição de uma review existente.*/
+
+public function atualizar(string $titulo_novo, int $id, int $nota, string $descricao): void
+{
+    $stmt = $this->pdo->prepare('
+        UPDATE review
+        SET nota = ?, comentario = ?, titulo_musica = ?
+        WHERE id_review = ?
+    ');
+    $stmt->execute([$nota, $descricao, $titulo_novo, $id]);
+}
 }
