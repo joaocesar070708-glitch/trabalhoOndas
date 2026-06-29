@@ -35,14 +35,14 @@ class UsuarioRepository {
         return $usuarios;
     }
 
-public function salvar(Usuario $usuario): bool {
-    $stmt = $this->pdo->prepare(
-        'INSERT INTO usuario (nome, email, senha) VALUES (:nome, :email, :senha)'
+    public function salvar(Usuario $usuario): bool {
+        $stmt = $this->pdo->prepare(
+            'INSERT INTO usuario (nome, email, senha) VALUES (:nome, :email, :senha)'
     );
-    $resultado = $stmt->execute([
-        ':nome'  => $usuario->getNome(),
-        ':email' => $usuario->getEmail(),
-        ':senha' => hash('sha256', $usuario->getSenha()),
+        $resultado = $stmt->execute([
+            ':nome'  => $usuario->getNome(),
+            ':email' => $usuario->getEmail(),
+            ':senha' => hash('sha256', $usuario->getSenha()),
     ]);
 
     if ($resultado) {
@@ -51,7 +51,6 @@ public function salvar(Usuario $usuario): bool {
 
     return $resultado;
 }
-
 
     public function atualizar(int $id, string $nome, string $email): bool {
         $usuario = $this->buscarPorId($id);
