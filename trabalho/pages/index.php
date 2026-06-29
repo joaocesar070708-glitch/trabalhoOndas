@@ -1,5 +1,6 @@
 <?php
 
+
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../repository/UsuarioRepository.php';
 require_once __DIR__ . '/../repository/reviewRepository.php';
@@ -13,7 +14,16 @@ if ($user === null) {
 }
 
 $repoReview = new ReviewRepository();
+
+if (!empty($_GET['excluir'])) {
+
+    $repoReview->excluir((int) $_GET['excluir']);
+    header('Location: index.php');
+    exit;
+}
+
 $reviews = $repoReview->listarPorUsuario($user->getId());
+
 
 function renderEstrelas(int $nota): string {
     $nota = max(0, min(5, $nota));
@@ -62,12 +72,14 @@ require_once __DIR__ . '/../includes/header.php';
           <p class="review-meta">
             <?= date('d/m/Y', strtotime($review->getCriadoEm())) ?>
           </p>
+          <a href="index.php?excluir=<?= $review->getId() ?>" 
+            onclick="return confirm('Certeza que deseja excluir esta review?')">Excluir</a>
         </div>
       </article>
     <?php endforeach; ?>
-  </div>
+
+
 <?php endif; ?>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
 
--- $review->getAlbumNome(),
