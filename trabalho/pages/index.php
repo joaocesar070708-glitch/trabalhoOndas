@@ -54,6 +54,7 @@ require_once __DIR__ . '/../includes/header.php';
           <?php if ($review->getArtistaNome() !== ''): ?>
             <p class="review-artista"><?= htmlspecialchars($review->getArtistaNome()) ?></p>
           <?php endif; ?>
+          <p class="review-artista"><?= htmlspecialchars($review->getAlbumNome()) ?></p>
           <p class="review-estrelas"><?= renderEstrelas($review->getNota()) ?></p>
           <?php if ($review->getDescricao() !== ''): ?>
             <p class="review-descricao"><?= htmlspecialchars($review->getDescricao()) ?></p>
@@ -68,3 +69,5 @@ require_once __DIR__ . '/../includes/header.php';
 <?php endif; ?>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
+
+-- $review->getAlbumNome(),
