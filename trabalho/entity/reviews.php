@@ -36,6 +36,14 @@ class Review {
         $this->id = $id;
     }
 
+    public function getMusicaTitulo(): string {
+    return $this->dados['titulo_musica'] ?? '';
+}
+
+public function getArtistaNome(): string {
+    return $this->dados['nome_artista'] ?? '';
+}
+
     public function getId():        int    { return $this->id; }
     public function getNota():      int    { return $this->nota; }
     public function getDescricao(): string { return $this->descricao; }

@@ -113,6 +113,9 @@ CREATE TABLE IF NOT EXISTS review (
     id INT PRIMARY KEY AUTO_INCREMENT,
     nota INT NOT NULL CHECK (nota BETWEEN 1 AND 5),
     descricao TEXT,
+    titulo_musica VARCHAR(150) NOT NULL,
+    nome_artista VARCHAR(150) NULL,
+    nome_album VARCHAR(150) NULL,
     usuario_id INT NOT NULL,
     musica_id INT NOT NULL,
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -124,6 +127,7 @@ CREATE TABLE IF NOT EXISTS review (
         FOREIGN KEY (musica_id) REFERENCES musica(id)
         ON DELETE CASCADE
 );
+
 
 
 

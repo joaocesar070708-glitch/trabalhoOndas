@@ -24,11 +24,11 @@ $review = '';
 
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $titulo = trim($_POST['MusTitulo'] ?? '');
-    $artistanome  = trim($_POST['MusArtistaNome'] ?? '');
-    $album = trim($_POST['MusAlbum'] ?? '');
-    $nota = $_POST['Musnota'] ?? '';
-    $review = trim($_POST['MusReview'] ?? '');
+    $titulo       = trim($_POST['titulo'] ?? '');
+    $artistanome  = trim($_POST['artistanome'] ?? '');
+    $album        = trim($_POST['album'] ?? '');
+    $nota         = $_POST['nota'] ?? '';
+    $review       = trim($_POST['review'] ?? '');
 
     if ($titulo === '') {
         $erro = 'Informe o nome da música.';
@@ -62,7 +62,7 @@ require_once __DIR__ . '/../includes/header.php';
 <?php endif; ?>
 
 <div class="form-card">
-  <form method="post" action="adicionar-musica.php" novalidate>
+  <form method="post" action="" novalidate>
 
     <div class="form-group">
       <label for="titulo">Música</label>

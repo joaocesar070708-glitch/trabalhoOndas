@@ -17,6 +17,22 @@ class ReviewRepository {
         return $dados ? new Review($dados) : null;
     }
 
+    public function criar(int $usuarioId, string $titulo, string $artistanome, string $album, int $nota, string $descricao): void
+{
+    $stmt = $this->pdo->prepare(
+        'INSERT INTO review (usuario_id, titulo_musica, nome_artista, nome_album, nota, descricao)
+         VALUES (:usuario_id, :titulo, :artista, :album, :nota, :descricao)'
+    );
+    $stmt->execute([
+        'usuario_id' => $usuarioId,
+        'titulo'     => $titulo,
+        'artista'    => $artistanome !== '' ? $artistanome : null,
+        'album'      => $album !== '' ? $album : null,
+        'nota'       => $nota,
+        'descricao'  => $descricao,
+    ]);
+}
+
     public function buscarPorUsuarioEMusica(int $usuarioId, int $musicaId): ?Review {
         $stmt = $this->pdo->prepare(
             'SELECT * FROM review WHERE usuario_id = :usuario_id AND musica_id = :musica_id LIMIT 1'
@@ -46,20 +62,19 @@ class ReviewRepository {
     }
 
     /** @return Review[] */
-    public function listarPorUsuario(int $usuarioId): array {
-        $stmt = $this->pdo->prepare(
-            'SELECT review.*, musica.titulo AS musica_titulo FROM review
-             JOIN musica ON review.musica_id = musica.id
-             WHERE review.usuario_id = :usuario_id
-             ORDER BY review.criado_em DESC'
-        );
-        $stmt->execute([':usuario_id' => $usuarioId]);
-        $lista = [];
-        while ($dados = $stmt->fetch()) {
-            $lista[] = new Review($dados);
-        }
-        return $lista;
+   public function listarPorUsuario(int $usuarioId): array {
+    $stmt = $this->pdo->prepare(
+        'SELECT * FROM review
+         WHERE usuario_id = :usuario_id
+         ORDER BY criado_em DESC'
+    );
+    $stmt->execute([':usuario_id' => $usuarioId]);
+    $lista = [];
+    while ($dados = $stmt->fetch()) {
+        $lista[] = new Review($dados);
     }
+    return $lista;
+}
 
     public function mediaPorMusica(int $musicaId): float {
         $stmt = $this->pdo->prepare(

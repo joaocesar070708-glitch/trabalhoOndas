@@ -33,6 +33,25 @@ class AlbumRepository {
         return $lista;
     }
 
+     public function salvar(Review $review): bool {
+        $stmt = $this->pdo->prepare(
+            'INSERT INTO review (nota, descricao, usuario_id, musica_id)
+             VALUES (:nota, :descricao, :usuario_id, :musica_id)'
+        );
+        $resultado = $stmt->execute([
+            ':nota'       => $review->getNota(),
+            ':descricao'  => $review->getDescricao(),
+            ':usuario_id' => $review->getUsuarioId(),
+            ':musica_id'  => $review->getMusicaId(),
+        ]);
+
+        if ($resultado) {
+            $review->registrarIdGerado((int) $this->pdo->lastInsertId());
+        }
+
+        return $resultado;
+    }
+
     /** @return Album[] */
     public function listarPorArtista(int $artistaId): array {
         $stmt = $this->pdo->prepare(
