@@ -2,6 +2,7 @@
 
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../entity/reviews.php';
+
 class ReviewRepository {
 
     private PDO $pdo;
@@ -11,49 +12,20 @@ class ReviewRepository {
     }
 
     public function buscarPorId(int $id): ?Review {
-        $stmt = $this->pdo->prepare('SELECT * FROM review WHERE id = :id LIMIT 1');
+        $stmt = $this->pdo->prepare('SELECT * FROM review WHERE id_review = :id LIMIT 1');
         $stmt->execute([':id' => $id]);
         $dados = $stmt->fetch();
         return $dados ? new Review($dados) : null;
     }
 
-    public function criar(int $usuarioId, string $titulo, string $artistanome, string $album, int $nota, string $descricao): void
-{
-    $stmt = $this->pdo->prepare(
-        'INSERT INTO review (usuario_id, titulo_musica, nome_artista, nome_album, nota, descricao)
-         VALUES (:usuario_id, :titulo, :artista, :album, :nota, :descricao)'
-    );
-    $stmt->execute([
-        'usuario_id' => $usuarioId,
-        'titulo'     => $titulo,
-        'artista'    => $artistanome !== '' ? $artistanome : null,
-        'album'      => $album !== '' ? $album : null,
-        'nota'       => $nota,
-        'descricao'  => $descricao,
-    ]);
-}
-
-    public function buscarPorUsuarioEMusica(int $usuarioId, int $musicaId): ?Review {
-        $stmt = $this->pdo->prepare(
-            'SELECT * FROM review WHERE usuario_id = :usuario_id AND musica_id = :musica_id LIMIT 1'
-        );
-        $stmt->execute([
-            ':usuario_id' => $usuarioId,
-            ':musica_id'  => $musicaId,
-        ]);
-        $dados = $stmt->fetch();
-        return $dados ? new Review($dados) : null;
-    }
-
     /** @return Review[] */
-    public function listarPorMusica(int $musicaId): array {
+    public function listarPorUsuario(int $usuarioId): array {
         $stmt = $this->pdo->prepare(
-            'SELECT review.*, usuario.nome AS usuario_nome FROM review
-             JOIN usuario ON review.usuario_id = usuario.id
-             WHERE review.musica_id = :musica_id
-             ORDER BY review.criado_em DESC'
+            'SELECT * FROM review
+             WHERE usuario_id = :usuario_id
+             ORDER BY criado_em DESC'
         );
-        $stmt->execute([':musica_id' => $musicaId]);
+        $stmt->execute([':usuario_id' => $usuarioId]);
         $lista = [];
         while ($dados = $stmt->fetch()) {
             $lista[] = new Review($dados);
@@ -61,40 +33,18 @@ class ReviewRepository {
         return $lista;
     }
 
-    /** @return Review[] */
-   public function listarPorUsuario(int $usuarioId): array {
-    $stmt = $this->pdo->prepare(
-        'SELECT * FROM review
-         WHERE usuario_id = :usuario_id
-         ORDER BY criado_em DESC'
-    );
-    $stmt->execute([':usuario_id' => $usuarioId]);
-    $lista = [];
-    while ($dados = $stmt->fetch()) {
-        $lista[] = new Review($dados);
-    }
-    return $lista;
-}
-
-    public function mediaPorMusica(int $musicaId): float {
-        $stmt = $this->pdo->prepare(
-            'SELECT AVG(nota) AS media FROM review WHERE musica_id = :musica_id'
-        );
-        $stmt->execute([':musica_id' => $musicaId]);
-        $dados = $stmt->fetch();
-        return round((float) ($dados['media'] ?? 0), 1);
-    }
-
     public function salvar(Review $review): bool {
         $stmt = $this->pdo->prepare(
-            'INSERT INTO review (nota, descricao, usuario_id, musica_id)
-             VALUES (:nota, :descricao, :usuario_id, :musica_id)'
+            'INSERT INTO review (usuario_id, titulo_musica, nome_artista, nome_album, nota, comentario)
+             VALUES (:usuario_id, :titulo_musica, :nome_artista, :nome_album, :nota, :comentario)'
         );
         $resultado = $stmt->execute([
-            ':nota'       => $review->getNota(),
-            ':descricao'  => $review->getDescricao(),
-            ':usuario_id' => $review->getUsuarioId(),
-            ':musica_id'  => $review->getMusicaId(),
+            ':usuario_id'    => $review->getUsuarioId(),
+            ':titulo_musica' => $review->getMusicaTitulo(),
+            ':nome_artista'  => $review->getArtistaNome(),
+            ':nome_album'    => $review->getAlbumNome(),
+            ':nota'          => $review->getNota(),
+            ':comentario'    => $review->getDescricao(),
         ]);
 
         if ($resultado) {
@@ -104,25 +54,8 @@ class ReviewRepository {
         return $resultado;
     }
 
-    public function atualizar(int $id, int $nota, string $descricao): bool {
-        $review = $this->buscarPorId($id);
-
-        if ($review === null) {
-            throw new RuntimeException('Review não encontrada.');
-        }
-
-        $stmt = $this->pdo->prepare(
-            'UPDATE review SET nota = :nota, descricao = :descricao WHERE id = :id'
-        );
-        return $stmt->execute([
-            ':nota'      => $nota,
-            ':descricao' => $descricao,
-            ':id'        => $id,
-        ]);
-    }
-
     public function excluir(int $id): bool {
-        $stmt = $this->pdo->prepare('DELETE FROM review WHERE id = :id');
+        $stmt = $this->pdo->prepare('DELETE FROM review WHERE id_review = :id');
         return $stmt->execute([':id' => $id]);
     }
 }

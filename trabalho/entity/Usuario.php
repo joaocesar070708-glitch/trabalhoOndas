@@ -9,7 +9,7 @@ class Usuario {
     private string $criadoEm;
 
     public function __construct(array $dados) {
-        $this->id       = (int) ($dados['id']       ?? 0);
+        $this->id = (int) ($dados['usuario_id'] ?? $dados['id'] ?? 0);
         $this->nome     =        $dados['nome']      ?? '';
         $this->email    =        $dados['email']     ?? '';
         $this->senha    =        $dados['senha']     ?? '';

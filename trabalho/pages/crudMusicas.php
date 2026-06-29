@@ -3,6 +3,7 @@
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../repository/UsuarioRepository.php';
 require_once __DIR__ . '/../repository/reviewRepository.php';
+require_once __DIR__ . '/../entity/reviews.php';
 
 $repoUsuario = new UsuarioRepository();
 $user = $repoUsuario->buscarPorId($_SESSION['usuario_id']);
@@ -16,33 +17,33 @@ $repoReview = new ReviewRepository();
 
 $erro = null;
 
-$titulo = '';
+$titulo     = '';
 $artistanome = '';
-$album = '';
-$nota = '';
-$review = '';
-
+$album      = '';
+$nota       = '';
+$comentario = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $titulo       = trim($_POST['titulo'] ?? '');
-    $artistanome  = trim($_POST['artistanome'] ?? '');
-    $album        = trim($_POST['album'] ?? '');
-    $nota         = $_POST['nota'] ?? '';
-    $review       = trim($_POST['review'] ?? '');
+    $titulo      = trim($_POST['MusTitulo']      ?? '');
+    $artistanome = trim($_POST['MusArtistaNome'] ?? '');
+    $album       = trim($_POST['MusAlbum']       ?? '');
+    $nota        = $_POST['Musnota']             ?? '';
+    $comentario  = trim($_POST['MusReview']      ?? '');
 
     if ($titulo === '') {
         $erro = 'Informe o nome da música.';
     } elseif (!ctype_digit((string) $nota) || (int) $nota < 1 || (int) $nota > 5) {
         $erro = 'Escolha uma nota entre 1 e 5.';
     } else {
-        $repoReview->criar(
+        $novaReview = Review::novo(
             $user->getId(),
             $titulo,
             $artistanome,
             $album,
             (int) $nota,
-            $review
+            $comentario
         );
+        $repoReview->salvar($novaReview);
 
         header('Location: index.php');
         exit;
@@ -69,7 +70,7 @@ require_once __DIR__ . '/../includes/header.php';
       <input
         type="text"
         id="titulo"
-        name="titulo"
+        name="MusTitulo"
         placeholder="Nome da faixa"
         value="<?= htmlspecialchars($titulo) ?>"
         required
@@ -81,7 +82,7 @@ require_once __DIR__ . '/../includes/header.php';
       <input
         type="text"
         id="artistanome"
-        name="artistanome"
+        name="MusArtistaNome"
         placeholder="Nome do artista"
         value="<?= htmlspecialchars($artistanome) ?>"
       >
@@ -92,7 +93,7 @@ require_once __DIR__ . '/../includes/header.php';
       <input
         type="text"
         id="album"
-        name="album"
+        name="MusAlbum"
         placeholder="Nome do álbum"
         value="<?= htmlspecialchars($album) ?>"
       >
@@ -100,7 +101,7 @@ require_once __DIR__ . '/../includes/header.php';
 
     <div class="form-group">
       <label for="nota">Nota</label>
-      <select id="nota" name="nota" required>
+      <select id="nota" name="Musnota" required>
         <option value="" disabled <?= $nota === '' ? 'selected' : '' ?>>Escolha de 1 a 5</option>
         <?php for ($i = 1; $i <= 5; $i++): ?>
           <option value="<?= $i ?>" <?= (string) $nota === (string) $i ? 'selected' : '' ?>>
@@ -111,13 +112,13 @@ require_once __DIR__ . '/../includes/header.php';
     </div>
 
     <div class="form-group">
-      <label for="review">Comentário</label>
+      <label for="comentario">Comentário</label>
       <textarea
-        id="review"
-        name="review"
+        id="comentario"
+        name="MusReview"
         rows="4"
         placeholder="O que te marcou nessa faixa?"
-      ><?= htmlspecialchars($review) ?></textarea>
+      ><?= htmlspecialchars($comentario) ?></textarea>
     </div>
 
     <div class="form-actions">

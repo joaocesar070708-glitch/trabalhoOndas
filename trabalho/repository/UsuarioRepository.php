@@ -19,7 +19,7 @@ class UsuarioRepository {
     }
 
     public function buscarPorId(int $id): ?Usuario {
-        $stmt = $this->pdo->prepare('SELECT * FROM usuario WHERE id = :id LIMIT 1');
+        $stmt = $this->pdo->prepare('SELECT * FROM usuario WHERE usuario_id = :id LIMIT 1');
         $stmt->execute([':id' => $id]);
         $dados = $stmt->fetch();
         return $dados ? new Usuario($dados) : null;
