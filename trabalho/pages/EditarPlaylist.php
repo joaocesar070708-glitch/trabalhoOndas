@@ -54,7 +54,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nome'])) {
     try {
         $playlist->definirNome($_POST['nome']);
         $repoPlaylist->atualizar($id, $playlist->getNome());
-        $sucesso = true;
+        header("Location: verPlaylist.php?id=$id"); 
+        exit;
     } catch (InvalidArgumentException $e) {
         $erros[] = $e->getMessage();
         $playlist = $repoPlaylist->buscarPorId($id); // restaura o nome salvo
