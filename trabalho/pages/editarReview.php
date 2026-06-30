@@ -27,16 +27,27 @@ if ($review === null || !$review->pertenceAoUsuario($user->getId())) {
 $erros = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nota      = isset($_POST['nota'])      ? (int) $_POST['nota']      : 0;
+    $nota = isset($_POST['nota']) ? (int) $_POST['nota'] : 0;
     $descricao = isset($_POST['descricao']) ? trim($_POST['descricao']) : '';
+<<<<<<< HEAD
     $titulo    = isset($_POST['titulo'])    ? trim($_POST['titulo'])    : '';
     $link      = isset($_POST['link'])      ? trim($_POST['link'])      : '';
+=======
+    $titulo = isset($_POST['titulo']) ? trim($_POST['titulo']) : '';
+    $album = isset($_POST['album']) ? trim($_POST['album']) : '';
+    $artistanome = isset($_POST['artista']) ? trim($_POST['artista']) : '';
+>>>>>>> ebe0fe75596b60cd1fa25b466996914f856709fa
 
     try {
         $review->definirTitulo($titulo);
         $review->definirNota($nota);
         $review->definirComentario($descricao);
+<<<<<<< HEAD
         $review->definirLinkYoutube($link);
+=======
+        $review->definirAlbum($album);
+        $review->definirArtista($artistanome);
+>>>>>>> ebe0fe75596b60cd1fa25b466996914f856709fa
     } catch (InvalidArgumentException $e) {
         $erros[] = $e->getMessage();
     }
@@ -47,7 +58,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $id,
             $review->getNota(),
             $review->getDescricao(),
+<<<<<<< HEAD
             $review->getLinkYoutube()
+=======
+            $review->getAlbumNome(),
+            $review->getArtistaNome()
+>>>>>>> ebe0fe75596b60cd1fa25b466996914f856709fa
         );
         header('Location: index.php');
         exit;
@@ -85,6 +101,18 @@ require_once __DIR__ . '/../includes/header.php';
       <label for="titulo">Título da música</label>
       <input type="text" name="titulo" id="titulo"
              value="<?= htmlspecialchars($_POST['titulo'] ?? $review->getMusicaTitulo()) ?>" required>
+    </div>
+
+    <div class="form-group">
+      <label for="titulo">Nome do artista</label>
+      <input type="text" name="artista" id="artista"
+             value="<?= htmlspecialchars($_POST['artista'] ?? $review->getArtistaNome()) ?>" required>
+    </div>
+
+    <div class="form-group">
+      <label for="titulo">Título do álbum</label>
+      <input type="text" name="album" id="album"
+             value="<?= htmlspecialchars($_POST['album'] ?? $review->getAlbumNome()) ?>" required>
     </div>
 
     <div class="form-group">

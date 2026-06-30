@@ -60,6 +60,7 @@ class ReviewRepository {
         return $stmt->execute([':id' => $id]);
     }
 
+<<<<<<< HEAD
     public function atualizar(string $titulo_novo, int $id, int $nota, string $descricao, ?string $linkYoutube): void
     {
         $stmt = $this->pdo->prepare('
@@ -69,4 +70,17 @@ class ReviewRepository {
         ');
         $stmt->execute([$nota, $descricao, $titulo_novo, $linkYoutube, $id]);
     }
+=======
+/**Atualiza tudo de uma review existente.*/
+
+public function atualizar(string $titulo_novo, int $id, int $nota, string $descricao, string $album, string $artista): void
+{
+    $stmt = $this->pdo->prepare('
+        UPDATE review
+        SET nota = ?, comentario = ?, titulo_musica = ?, nome_album = ?, nome_artista = ?
+        WHERE id_review = ?
+    ');
+    $stmt->execute([$nota, $descricao, $titulo_novo, $album, $artista, $id]);
+}
+>>>>>>> ebe0fe75596b60cd1fa25b466996914f856709fa
 }
