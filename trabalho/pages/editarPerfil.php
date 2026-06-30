@@ -68,11 +68,9 @@ if ($senhaAtual !== '' || $senhaNova !== '') {
         }
     }
 
-    // Só atualiza nome/email se não tiver erros
     if (empty($erros)) {
         $repoUsuario->atualizar($user->getId(), $nome, $email);
         $sucesso = true;
-        // Recarrega o usuário para refletir os dados novos na página
         $user = $repoUsuario->buscarPorId($_SESSION['usuario_id']);
     }
 }
@@ -101,7 +99,7 @@ require_once __DIR__ . '/../includes/header.php';
 
   <form method="POST" action="editarPerfil.php" enctype="multipart/form-data">
 
-    <!-- Foto de perfil atual + input para trocar -->
+    <!-- trocar foto de perfil -->
     <div class="form-group form-avatar-group">
       <div class="avatar-preview-wrapper">
         <?php if (!empty($user->getFotoPerfil())): ?>
@@ -113,7 +111,7 @@ require_once __DIR__ . '/../includes/header.php';
         <?php endif; ?>
       </div>
       <label for="foto" class="btn-trocar-foto">Trocar foto</label>
-      <!-- Input oculto — o clique vem do label acima -->
+  
       <input type="file" name="foto" id="foto" accept="image/*" style="display:none">
     </div>
 

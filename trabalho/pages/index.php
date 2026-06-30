@@ -118,6 +118,12 @@ require_once __DIR__ . '/../includes/header.php';
     letter-spacing: 0.03em;
   }
 
+  .review-id {
+    font-size: 0.75rem;
+    opacity: 0.5;
+    margin-left: 0.4rem;
+  }
+
   .avatar-link:hover .avatar-overlay {
     opacity: 1;
   }
@@ -133,7 +139,10 @@ require_once __DIR__ . '/../includes/header.php';
       <article class="review-card">
         <div class="review-cover" style="background:<?= $gradientes[$review->getId() % count($gradientes)] ?>"></div>
         <div class="review-body">
-          <p class="review-musica"><?= htmlspecialchars($review->getMusicaTitulo()) ?></p>
+          <p class="review-musica">
+            <?= htmlspecialchars($review->getMusicaTitulo()) ?>
+            <span class="review-id">#<?= $review->getId() ?></span>
+          </p>
           <?php if ($review->getArtistaNome() !== ''): ?>
             <p class="review-artista"><?= htmlspecialchars($review->getArtistaNome()) ?></p>
           <?php endif; ?>

@@ -12,14 +12,14 @@ class Review {
     private string $criadoEm;
 
     public function __construct(array $dados) {
-        $this->id           = (int) ($dados['id_review']     ?? 0);
-        $this->usuarioId    = (int) ($dados['usuario_id']    ?? 0);
-        $this->tituloMusica =        $dados['titulo_musica'] ?? '';
-        $this->nomeArtista  =        $dados['nome_artista']  ?? '';
-        $this->nomeAlbum    =        $dados['nome_album']    ?? '';
-        $this->nota         = (int) ($dados['nota']          ?? 0);
-        $this->comentario   =        $dados['comentario']    ?? '';
-        $this->criadoEm     =        $dados['criado_em']     ?? '';
+        $this->id = (int) ($dados['id_review'] ?? 0);
+        $this->usuarioId = (int) ($dados['usuario_id'] ?? 0);
+        $this->tituloMusica = $dados['titulo_musica'] ?? '';
+        $this->nomeArtista = $dados['nome_artista']  ?? '';
+        $this->nomeAlbum = $dados['nome_album']    ?? '';
+        $this->nota = (int) ($dados['nota']          ?? 0);
+        $this->comentario = $dados['comentario']    ?? '';
+        $this->criadoEm = $dados['criado_em']     ?? '';
     }
 
     public static function novo(int $usuarioId, string $tituloMusica, string $nomeArtista, string $nomeAlbum, int $nota, string $comentario): self {

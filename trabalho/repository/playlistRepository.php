@@ -1,9 +1,9 @@
 <?php
 
 require_once __DIR__ . '/../config/database.php';
-require_once __DIR__ . '/../entity/Musica.php';
+require_once __DIR__ . '/../entity/playlist.php';
 
-class MusicaRepository {
+class PlaylistRepository {
 
     private PDO $pdo;
 
@@ -11,95 +11,75 @@ class MusicaRepository {
         $this->pdo = getConexao();
     }
 
-    public function buscarPorId(int $id): ?Musica {
-        $stmt = $this->pdo->prepare('SELECT * FROM musica WHERE id = :id LIMIT 1');
-        $stmt->execute([':id' => $id]);
+    // mostra playlist do usuario
+    public function listarPorUsuario(int $usuarioId): array {
+        $stmt = $this->pdo->prepare('
+            SELECT * FROM playlist
+            WHERE usuario_id = ?
+            ORDER BY criado_em DESC
+        ');
+        $stmt->execute([$usuarioId]);
+        $playlists = [];
+        while ($dados = $stmt->fetch()) {
+            $playlists[] = new Playlist($dados);
+        }
+        return $playlists;
+    }
+
+    public function buscarPorId(int $id): ?Playlist {
+        $stmt = $this->pdo->prepare('
+            SELECT * FROM playlist WHERE playlist_id = ? LIMIT 1
+        ');
+        $stmt->execute([$id]);
         $dados = $stmt->fetch();
-        return $dados ? new Musica($dados) : null;
+        return $dados ? new Playlist($dados) : null;
     }
 
-    /** @return Musica[] */
-    public function listarTodos(): array {
-        $stmt = $this->pdo->query(
-            'SELECT musica.*, usuario.nome AS artista_nome, album.titulo AS album_titulo
-             FROM musica
-             LEFT JOIN artista ON musica.artista_id = artista.id
-             LEFT JOIN usuario ON artista.usuario_id = usuario.id
-             LEFT JOIN album ON musica.album_id = album.id
-             ORDER BY musica.titulo ASC'
-        );
-        $lista = [];
-        while ($dados = $stmt->fetch()) {
-            $lista[] = new Musica($dados);
-        }
-        return $lista;
+    public function criar(int $usuarioId, string $nome): void {
+        $stmt = $this->pdo->prepare('
+            INSERT INTO playlist (usuario_id, nome) VALUES (?, ?)
+        ');
+        $stmt->execute([$usuarioId, $nome]);
     }
 
-    /** @return Musica[] */
-    public function listarPorArtista(int $artistaId): array {
-        $stmt = $this->pdo->prepare(
-            'SELECT * FROM musica WHERE artista_id = :artista_id ORDER BY titulo ASC'
-        );
-        $stmt->execute([':artista_id' => $artistaId]);
-        $lista = [];
-        while ($dados = $stmt->fetch()) {
-            $lista[] = new Musica($dados);
-        }
-        return $lista;
+
+    public function atualizar(int $id, string $nome): void {
+        $stmt = $this->pdo->prepare('
+            UPDATE playlist SET nome = ? WHERE playlist_id = ?
+        ');
+        $stmt->execute([$nome, $id]);
+    }
+    public function excluir(int $id): void {
+        $stmt = $this->pdo->prepare('
+            DELETE FROM playlist WHERE playlist_id = ?
+        ');
+        $stmt->execute([$id]);
     }
 
-    /** @return Musica[] */
-    public function listarPorAlbum(int $albumId): array {
-        $stmt = $this->pdo->prepare(
-            'SELECT * FROM musica WHERE album_id = :album_id ORDER BY titulo ASC'
-        );
-        $stmt->execute([':album_id' => $albumId]);
-        $lista = [];
-        while ($dados = $stmt->fetch()) {
-            $lista[] = new Musica($dados);
-        }
-        return $lista;
+    public function listarReviews(int $playlistId): array {
+        $stmt = $this->pdo->prepare('
+            SELECT r.*
+            FROM review r
+            INNER JOIN playlist_musica pm ON pm.id_review = r.id_review
+            WHERE pm.playlist_id = ?
+            ORDER BY r.criado_em DESC
+        ');
+        $stmt->execute([$playlistId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function salvar(Musica $musica): bool {
-        $stmt = $this->pdo->prepare(
-            'INSERT INTO musica (titulo, duracao, artista_id, album_id)
-             VALUES (:titulo, :duracao, :artista_id, :album_id)'
-        );
-        $resultado = $stmt->execute([
-            ':titulo'     => $musica->getTitulo(),
-            ':duracao'    => $musica->getDuracao(),
-            ':artista_id' => $musica->getArtistaId(),
-            ':album_id'   => $musica->getAlbumId(),
-        ]);
 
-        if ($resultado) {
-            $musica->registrarIdGerado((int) $this->pdo->lastInsertId());
-        }
-
-        return $resultado;
+    public function adicionarReview(int $playlistId, int $reviewId): void {
+        $stmt = $this->pdo->prepare('
+            INSERT IGNORE INTO playlist_musica (playlist_id, id_review) VALUES (?, ?)
+        ');
+        $stmt->execute([$playlistId, $reviewId]);
     }
 
-    public function atualizar(int $id, string $titulo, string $duracao, ?int $albumId): bool {
-        $musica = $this->buscarPorId($id);
-
-        if ($musica === null) {
-            throw new RuntimeException('Música não encontrada.');
-        }
-
-        $stmt = $this->pdo->prepare(
-            'UPDATE musica SET titulo = :titulo, duracao = :duracao, album_id = :album_id WHERE id = :id'
-        );
-        return $stmt->execute([
-            ':titulo'   => $titulo,
-            ':duracao'  => $duracao,
-            ':album_id' => $albumId,
-            ':id'       => $id,
-        ]);
-    }
-
-    public function excluir(int $id): bool {
-        $stmt = $this->pdo->prepare('DELETE FROM musica WHERE id = :id');
-        return $stmt->execute([':id' => $id]);
+    public function removerReview(int $playlistId, int $reviewId): void {
+        $stmt = $this->pdo->prepare('
+            DELETE FROM playlist_musica WHERE playlist_id = ? AND id_review = ?
+        ');
+        $stmt->execute([$playlistId, $reviewId]);
     }
 }

@@ -10,7 +10,7 @@ class Musica {
     private string $criadoEm;
 
     public function __construct(array $dados) {
-        $this->id        = (int) ($dados['id']         ?? 0);
+        $this->id = (int) ($dados['id'] ?? 0);
         $this->titulo    =        $dados['titulo']      ?? '';
         $this->duracao   =        $dados['duracao']     ?? '';
         $this->artistaId = (int) ($dados['artista_id']  ?? 0);
