@@ -61,10 +61,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nome'])) {
     }
 }
 
+$tocandoId = !empty($_GET['tocando']) ? (int) $_GET['tocando'] : 0;
 
 $reviewsNaPlaylist = $repoPlaylist->listarReviews($id);
-$idsNaPlaylist = array_column($reviewsNaPlaylist, 'id_review');
-
+$idsNaPlaylist      = array_map(fn($r) => $r->getId(), $reviewsNaPlaylist);
 
 $todasReviews = $repoReview->listarPorUsuario($user->getId());
 $reviewsDisponiveis = array_filter(
@@ -121,13 +121,30 @@ require_once __DIR__ . '/../includes/header.php';
       <?php foreach ($reviewsNaPlaylist as $r): ?>
         <li class="musica-item">
           <span>
-            <strong><?= htmlspecialchars($r['titulo_musica']) ?></strong>
-            — <?= htmlspecialchars($r['nome_artista']) ?>
-            <?= renderEstrelas((int) $r['nota']) ?>
+            <strong><?= htmlspecialchars($r->getMusicaTitulo()) ?></strong>
+            — <?= htmlspecialchars($r->getArtistaNome()) ?>
+            <?= renderEstrelas($r->getNota()) ?>
           </span>
-          <a href="editarPlaylist.php?id=<?= $id ?>&remover_review=<?= $r['id_review'] ?>"
-             onclick="return confirm('Remover esta música da playlist?')"
-             class="btn-remover">Remover</a>
+          <span class="musica-acoes">
+            <?php if ($r->podeTocar()): ?>
+              <?php if ($tocandoId === $r->getId()): ?>
+                <a href="editarPlaylist.php?id=<?= $id ?>">Fechar</a>
+              <?php else: ?>
+                <a href="editarPlaylist.php?id=<?= $id ?>&tocando=<?= $r->getId() ?>">Tocar</a>
+              <?php endif; ?>
+            <?php endif; ?>
+            <a href="editarPlaylist.php?id=<?= $id ?>&remover_review=<?= $r->getId() ?>"
+               onclick="return confirm('Remover esta música da playlist?')"
+               class="btn-remover">Remover</a>
+          </span>
+
+          <?php if ($tocandoId === $r->getId() && $r->podeTocar()): ?>
+            <div class="player-musica">
+              <iframe width="100%" height="200"
+                src="https://www.youtube.com/embed/<?= $r->getIdVideoYoutube() ?>"
+                frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+            </div>
+          <?php endif; ?>
         </li>
       <?php endforeach; ?>
     </ul>
@@ -196,6 +213,18 @@ require_once __DIR__ . '/../includes/header.php';
     padding: 0.75rem 1rem;
     background: rgba(255,255,255,0.05);
     border-radius: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .musica-acoes {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+  }
+
+  .player-musica {
+    width: 100%;
+    margin-top: 0.5rem;
   }
 
   .btn-remover  { color: #FF6B4A; text-decoration: underline; font-size: 0.85rem; }

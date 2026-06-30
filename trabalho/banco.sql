@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS review (
     nota INT NOT NULL CHECK (nota BETWEEN 1 AND 5),
     comentario TEXT,
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    link_youtube VARCHAR(255) DEFAULT NULL,
     CONSTRAINT fk_id_usuario
         FOREIGN KEY (usuario_id) REFERENCES usuario(usuario_id)
         ON DELETE SET NULL

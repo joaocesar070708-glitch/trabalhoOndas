@@ -30,11 +30,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nota      = isset($_POST['nota'])      ? (int) $_POST['nota']      : 0;
     $descricao = isset($_POST['descricao']) ? trim($_POST['descricao']) : '';
     $titulo    = isset($_POST['titulo'])    ? trim($_POST['titulo'])    : '';
+    $link      = isset($_POST['link'])      ? trim($_POST['link'])      : '';
 
     try {
         $review->definirTitulo($titulo);
         $review->definirNota($nota);
         $review->definirComentario($descricao);
+        $review->definirLinkYoutube($link);
     } catch (InvalidArgumentException $e) {
         $erros[] = $e->getMessage();
     }
@@ -44,12 +46,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $review->getMusicaTitulo(),
             $id,
             $review->getNota(),
-            $review->getDescricao()
+            $review->getDescricao(),
+            $review->getLinkYoutube()
         );
         header('Location: index.php');
         exit;
     }
 }
+
+
+
+
 
 require_once __DIR__ . '/../includes/header.php';
 ?>
@@ -94,6 +101,13 @@ require_once __DIR__ . '/../includes/header.php';
     <div class="form-group">
       <label for="descricao">Descrição</label>
       <textarea name="descricao" id="descricao" rows="4"><?= htmlspecialchars($review->getDescricao()) ?></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="link">Link do YouTube</label>
+      <input type="url" name="link" id="link"
+             placeholder="https://www.youtube.com/watch?v=..."
+             value="<?= htmlspecialchars($_POST['link'] ?? $review->getLinkYoutube() ?? '') ?>">
     </div>
 
     <div class="form-actions">

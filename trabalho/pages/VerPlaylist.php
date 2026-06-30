@@ -22,7 +22,8 @@ if ($playlist === null || !$playlist->pertenceAoUsuario($user->getId())) {
     exit;
 }
 
-$reviews = $repoPlaylist->listarReviews($id);
+$reviews   = $repoPlaylist->listarReviews($id);
+$tocandoId = !empty($_GET['tocando']) ? (int) $_GET['tocando'] : 0;
 
 function renderEstrelas(int $nota): string {
     $nota = max(0, min(5, $nota));
@@ -51,14 +52,30 @@ require_once __DIR__ . '/../includes/header.php';
     <?php foreach ($reviews as $review): ?>
       <article class="review-card">
         <div class="review-body">
-          <p class="review-musica"><?= htmlspecialchars($review['titulo_musica']) ?></p>
-          <p class="review-artista"><?= htmlspecialchars($review['nome_artista']) ?></p>
-          <?php if (!empty($review['nome_album'])): ?>
-            <p class="review-artista"><?= htmlspecialchars($review['nome_album']) ?></p>
+          <p class="review-musica"><?= htmlspecialchars($review->getMusicaTitulo()) ?></p>
+          <p class="review-artista"><?= htmlspecialchars($review->getArtistaNome()) ?></p>
+          <?php if ($review->getAlbumNome() !== ''): ?>
+            <p class="review-artista"><?= htmlspecialchars($review->getAlbumNome()) ?></p>
           <?php endif; ?>
-          <p class="review-estrelas"><?= renderEstrelas((int) $review['nota']) ?></p>
-          <?php if (!empty($review['comentario'])): ?>
-            <p class="review-descricao"><?= htmlspecialchars($review['comentario']) ?></p>
+          <p class="review-estrelas"><?= renderEstrelas($review->getNota()) ?></p>
+          <?php if ($review->getDescricao() !== ''): ?>
+            <p class="review-descricao"><?= htmlspecialchars($review->getDescricao()) ?></p>
+          <?php endif; ?>
+
+          <?php if ($review->podeTocar()): ?>
+            <?php if ($tocandoId === $review->getId()): ?>
+              <a href="verPlaylist.php?id=<?= $playlist->getId() ?>">Fechar</a>
+            <?php else: ?>
+              <a href="verPlaylist.php?id=<?= $playlist->getId() ?>&tocando=<?= $review->getId() ?>">Tocar</a>
+            <?php endif; ?>
+          <?php endif; ?>
+
+          <?php if ($tocandoId === $review->getId() && $review->podeTocar()): ?>
+            <div class="player-musica">
+              <iframe width="100%" height="200"
+                src="https://www.youtube.com/embed/<?= $review->getIdVideoYoutube() ?>"
+                frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+            </div>
           <?php endif; ?>
         </div>
       </article>
@@ -71,6 +88,10 @@ require_once __DIR__ . '/../includes/header.php';
     display: flex;
     gap: 1rem;
     margin-bottom: 1.5rem;
+  }
+
+  .player-musica {
+    margin-top: 0.75rem;
   }
 </style>
 

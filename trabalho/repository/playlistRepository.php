@@ -2,6 +2,7 @@
 
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../entity/playlist.php';
+require_once __DIR__ . '/../entity/reviews.php';
 
 class PlaylistRepository {
 
@@ -56,6 +57,7 @@ class PlaylistRepository {
         $stmt->execute([$id]);
     }
 
+    /** @return Review[] */
     public function listarReviews(int $playlistId): array {
         $stmt = $this->pdo->prepare('
             SELECT r.*
@@ -65,7 +67,11 @@ class PlaylistRepository {
             ORDER BY r.criado_em DESC
         ');
         $stmt->execute([$playlistId]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $reviews = [];
+        while ($dados = $stmt->fetch()) {
+            $reviews[] = new Review($dados);
+        }
+        return $reviews;
     }
 
 

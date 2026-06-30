@@ -35,8 +35,8 @@ class ReviewRepository {
 
     public function salvar(Review $review): bool {
         $stmt = $this->pdo->prepare(
-            'INSERT INTO review (usuario_id, titulo_musica, nome_artista, nome_album, nota, comentario)
-             VALUES (:usuario_id, :titulo_musica, :nome_artista, :nome_album, :nota, :comentario)'
+            'INSERT INTO review (usuario_id, titulo_musica, nome_artista, nome_album, nota, comentario, link_youtube)
+             VALUES (:usuario_id, :titulo_musica, :nome_artista, :nome_album, :nota, :comentario, :link_youtube)'
         );
         $resultado = $stmt->execute([
             ':usuario_id'    => $review->getUsuarioId(),
@@ -45,6 +45,7 @@ class ReviewRepository {
             ':nome_album'    => $review->getAlbumNome(),
             ':nota'          => $review->getNota(),
             ':comentario'    => $review->getDescricao(),
+            ':link_youtube'  => $review->getLinkYoutube(),
         ]);
 
         if ($resultado) {
@@ -59,19 +60,13 @@ class ReviewRepository {
         return $stmt->execute([':id' => $id]);
     }
 
-
-
-
- 
-/**Atualiza a nota e a descrição de uma review existente.*/
-
-public function atualizar(string $titulo_novo, int $id, int $nota, string $descricao): void
-{
-    $stmt = $this->pdo->prepare('
-        UPDATE review
-        SET nota = ?, comentario = ?, titulo_musica = ?
-        WHERE id_review = ?
-    ');
-    $stmt->execute([$nota, $descricao, $titulo_novo, $id]);
-}
+    public function atualizar(string $titulo_novo, int $id, int $nota, string $descricao, ?string $linkYoutube): void
+    {
+        $stmt = $this->pdo->prepare('
+            UPDATE review
+            SET nota = ?, comentario = ?, titulo_musica = ?, link_youtube = ?
+            WHERE id_review = ?
+        ');
+        $stmt->execute([$nota, $descricao, $titulo_novo, $linkYoutube, $id]);
+    }
 }

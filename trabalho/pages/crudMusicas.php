@@ -22,14 +22,15 @@ $artistanome = '';
 $album = '';
 $nota  = '';
 $comentario  = '';
+$link  = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $titulo = trim($_POST['MusTitulo'] ?? '');
+    $titulo      = trim($_POST['MusTitulo'] ?? '');
     $artistanome = trim($_POST['MusArtistaNome'] ?? '');
-    $album = trim($_POST['MusAlbum'] ?? '');
-    $nota  = $_POST['Musnota'] ?? '';
+    $album       = trim($_POST['MusAlbum'] ?? '');
+    $nota        = $_POST['Musnota'] ?? '';
     $comentario  = trim($_POST['MusReview'] ?? '');
-
+    $link        = trim($_POST['MusLink'] ?? '');
 
     try {
         $novaReview = Review::novo(
@@ -38,7 +39,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $artistanome,
             $album,
             (int) $nota,
-            $comentario
+            $comentario,
+            $link
         );
         $repoReview->salvar($novaReview);
 
@@ -117,6 +119,17 @@ require_once __DIR__ . '/../includes/header.php';
         rows="4"
         placeholder="O que te marcou nessa faixa?"
       ><?= htmlspecialchars($comentario) ?></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="link">Link do YouTube</label>
+      <input
+        type="url"
+        id="link"
+        name="MusLink"
+        placeholder="https://www.youtube.com/watch?v=..."
+        value="<?= htmlspecialchars($link) ?>"
+      >
     </div>
 
     <div class="form-actions">

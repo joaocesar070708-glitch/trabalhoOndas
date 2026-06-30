@@ -26,6 +26,7 @@ if (!empty($_get['atualizar'])){
   
 }
 
+$tocandoId = !empty($_GET['tocando']) ? (int) $_GET['tocando'] : 0;
 
 $reviews = $repoReview->listarPorUsuario($user->getId());
 
@@ -137,6 +138,10 @@ require_once __DIR__ . '/../includes/header.php';
     margin-bottom: 1rem;
     font-weight: 600;
   }
+
+  .player-musica {
+    margin-top: 0.75rem;
+  }
 </style>
 
 <?php if (empty($reviews)): ?>
@@ -167,6 +172,22 @@ require_once __DIR__ . '/../includes/header.php';
           <a href="index.php?excluir=<?= $review->getId() ?>" 
             onclick="return confirm('Certeza que deseja excluir esta review?')">Excluir</a>
           <a href="editarReview.php?id=<?= $review->getId() ?>">Editar</a>
+
+          <?php if ($review->podeTocar()): ?>
+            <?php if ($tocandoId === $review->getId()): ?>
+              <a href="index.php">Fechar</a>
+            <?php else: ?>
+              <a href="index.php?tocando=<?= $review->getId() ?>">Tocar</a>
+            <?php endif; ?>
+          <?php endif; ?>
+
+          <?php if ($tocandoId === $review->getId() && $review->podeTocar()): ?>
+            <div class="player-musica">
+              <iframe width="100%" height="200"
+                src="https://www.youtube.com/embed/<?= $review->getIdVideoYoutube() ?>"
+                frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+            </div>
+          <?php endif; ?>
         </div>
       </article>
     <?php endforeach; ?>
