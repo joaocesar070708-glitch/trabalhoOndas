@@ -47,25 +47,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
-        $foto       = $_FILES['foto'];
-        $extensao   = strtolower(pathinfo($foto['name'], PATHINFO_EXTENSION));
-        $permitidas = ['jpg', 'jpeg', 'png', 'webp'];
+   if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
+    $foto          = $_FILES['foto'];
+    $extensao      = strtolower(pathinfo($foto['name'], PATHINFO_EXTENSION));
+    $permitidas    = ['jpg', 'jpeg', 'png', 'webp'];
+    $tamanhoMaximo = 2 * 1024 * 1024; //limite de tamanho 
 
-        if (!in_array($extensao, $permitidas)) {
-            $erros[] = 'Formato de imagem inválido. Use JPG, PNG ou WEBP.';
+    if (!in_array($extensao, $permitidas)) {
+        $erros[] = 'Formato de imagem inválido. Use JPG, PNG ou WEBP.';
+    } elseif ($foto['size'] > $tamanhoMaximo) {
+        $erros[] = 'A imagem deve ter no máximo 2MB.';
+    } else {
+        $nomeArquivo = uniqid('foto_') . '.' . $extensao;
+        $destino     = __DIR__ . '/../../uploads/' . $nomeArquivo;
+
+        if (move_uploaded_file($foto['tmp_name'], $destino)) {
+            $user->definirFotoPerfil($nomeArquivo);
+            $repoUsuario->atualizarFoto($user->getId(), $nomeArquivo);
         } else {
-            $nomeArquivo = uniqid('foto_') . '.' . $extensao;
-            $destino     = __DIR__ . '/../../uploads/' . $nomeArquivo;
-
-            if (move_uploaded_file($foto['tmp_name'], $destino)) {
-                $user->definirFotoPerfil($nomeArquivo);
-                $repoUsuario->atualizarFoto($user->getId(), $nomeArquivo);
-            } else {
-                $erros[] = 'Erro ao salvar a imagem. Tente novamente.';
-            }
+            $erros[] = 'Erro ao salvar a imagem. Tente novamente.';
         }
     }
+}
 
     if (empty($erros)) {
         $repoUsuario->atualizar($user->getId(), $user->getNome(), $user->getEmail());
