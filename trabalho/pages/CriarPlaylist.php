@@ -3,6 +3,7 @@
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../repository/UsuarioRepository.php';
 require_once __DIR__ . '/../repository/PlaylistRepository.php';
+require_once __DIR__ . '/../entity/playlist.php';
 
 $repoUsuario  = new UsuarioRepository();
 $repoPlaylist = new PlaylistRepository();
@@ -17,16 +18,16 @@ if ($user === null) {
 $erros = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nome = isset($_POST['nome']) ? trim($_POST['nome']) : '';
+    $nome = $_POST['nome'] ?? '';
 
-    if ($nome === '') {
-        $erros[] = 'O nome da playlist não pode ser vazio.';
-    }
+    try {
+        $novaPlaylist = Playlist::novo($user->getId(), $nome);
+        $repoPlaylist->criar($novaPlaylist->getUsuarioId(), $novaPlaylist->getNome());
 
-    if (empty($erros)) {
-        $repoPlaylist->criar($user->getId(), $nome);
         header('Location: minhasPlaylists.php');
         exit;
+    } catch (InvalidArgumentException $e) {
+        $erros[] = $e->getMessage();
     }
 }
 

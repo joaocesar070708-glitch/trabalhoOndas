@@ -14,10 +14,12 @@ if ($user === null) {
 
 $repoReview = new ReviewRepository();
 
-$id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
+$id     = isset($_GET['id']) ? (int) $_GET['id'] : 0;
 $review = $repoReview->buscarPorId($id);
 
-if ($review === null || $review->getUsuarioId() !== $user->getId()) {
+// pertenceAoUsuario() é a entidade decidindo se o dono é esse usuário,
+// em vez da página comparar os ids manualmente
+if ($review === null || !$review->pertenceAoUsuario($user->getId())) {
     header('Location: index.php');
     exit;
 }
@@ -25,19 +27,25 @@ if ($review === null || $review->getUsuarioId() !== $user->getId()) {
 $erros = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nota      = isset($_POST['nota'])      ? (int) $_POST['nota']        : 0;
-    $descricao = isset($_POST['descricao']) ? trim($_POST['descricao'])   : '';
-    $titulo    = isset($_POST['titulo'])    ? trim($_POST['titulo'])      : '';
+    $nota      = isset($_POST['nota'])      ? (int) $_POST['nota']      : 0;
+    $descricao = isset($_POST['descricao']) ? trim($_POST['descricao']) : '';
+    $titulo    = isset($_POST['titulo'])    ? trim($_POST['titulo'])    : '';
 
-    if ($nota < 1 || $nota > 5) {
-        $erros[] = 'A nota deve ser entre 1 e 5.';
-    }
-    if ($titulo === '') {
-        $erros[] = 'O título não pode ser vazio.';
+    try {
+        $review->definirTitulo($titulo);
+        $review->definirNota($nota);
+        $review->definirComentario($descricao);
+    } catch (InvalidArgumentException $e) {
+        $erros[] = $e->getMessage();
     }
 
     if (empty($erros)) {
-        $repoReview->atualizar($titulo, $id, $nota, $descricao);
+        $repoReview->atualizar(
+            $review->getMusicaTitulo(),
+            $id,
+            $review->getNota(),
+            $review->getDescricao()
+        );
         header('Location: index.php');
         exit;
     }
@@ -69,7 +77,7 @@ require_once __DIR__ . '/../includes/header.php';
     <div class="form-group">
       <label for="titulo">Título da música</label>
       <input type="text" name="titulo" id="titulo"
-             value="<?= htmlspecialchars($review->getMusicaTitulo()) ?>" required>
+             value="<?= htmlspecialchars($_POST['titulo'] ?? $review->getMusicaTitulo()) ?>" required>
     </div>
 
     <div class="form-group">

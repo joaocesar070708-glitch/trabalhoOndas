@@ -65,6 +65,10 @@ require_once __DIR__ . '/../includes/header.php';
   <p>Aqui estão as músicas que você já avaliou.</p>
 </section>
 
+<?php if (!empty($_GET['playlist_excluida'])): ?>
+  <p class="form-sucesso">Playlist excluída com sucesso!</p>
+<?php endif; ?> 
+
 <style>
   .hero-nome-wrapper {
     display: flex;
@@ -126,6 +130,12 @@ require_once __DIR__ . '/../includes/header.php';
 
   .avatar-link:hover .avatar-overlay {
     opacity: 1;
+  }
+
+  .form-sucesso {
+    color: #4ADEDE;
+    margin-bottom: 1rem;
+    font-weight: 600;
   }
 </style>
 

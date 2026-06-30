@@ -4,6 +4,7 @@ require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../repository/UsuarioRepository.php';
 require_once __DIR__ . '/../repository/PlaylistRepository.php';
 require_once __DIR__ . '/../repository/reviewRepository.php';
+require_once __DIR__ . '/../entity/playlist.php';
 
 $repoUsuario  = new UsuarioRepository();
 $repoPlaylist = new PlaylistRepository();
@@ -16,59 +17,56 @@ if ($user === null) {
     exit;
 }
 
-$id       = isset($_GET['id']) ? (int) $_GET['id'] : 0;
+$id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
 $playlist = $repoPlaylist->buscarPorId($id);
 
-if ($playlist === null || $playlist->getUsuarioId() !== $user->getId()) {
-    header('Location: playlists.php');
+
+if ($playlist === null || !$playlist->pertenceAoUsuario($user->getId())) {
+    header('Location: minhasPlaylists.php');
     exit;
 }
 
-// Excluir a playlist
+
 if (!empty($_GET['excluir'])) {
     $repoPlaylist->excluir($id);
-    header('Location: playlists.php');
+    header('Location: index.php?playlist_excluida=1');
     exit;
 }
 
-// Adicionar review à playlist
 if (!empty($_POST['adicionar_review'])) {
     $repoPlaylist->adicionarReview($id, (int) $_POST['adicionar_review']);
     header("Location: editarPlaylist.php?id=$id");
     exit;
 }
 
-// Remover review da playlist
+
 if (!empty($_GET['remover_review'])) {
     $repoPlaylist->removerReview($id, (int) $_GET['remover_review']);
     header("Location: editarPlaylist.php?id=$id");
     exit;
 }
 
-$erros  = [];
+$erros   = [];
 $sucesso = false;
 
-// Atualizar nome da playlist
+// atualiza nome da playlist
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nome'])) {
-    $nome = trim($_POST['nome']);
-
-    if ($nome === '') {
-        $erros[] = 'O nome não pode ser vazio.';
-    }
-
-    if (empty($erros)) {
-        $repoPlaylist->atualizar($id, $nome);
-        $sucesso  = true;
-        $playlist = $repoPlaylist->buscarPorId($id);
+    try {
+        $playlist->definirNome($_POST['nome']);
+        $repoPlaylist->atualizar($id, $playlist->getNome());
+        $sucesso = true;
+    } catch (InvalidArgumentException $e) {
+        $erros[] = $e->getMessage();
+        $playlist = $repoPlaylist->buscarPorId($id); // restaura o nome salvo
     }
 }
 
-// Reviews já na playlist
-$reviewsNaPlaylist = $repoPlaylist->listarReviews($id);
-$idsNaPlaylist     = array_column($reviewsNaPlaylist, 'id_review');
 
-// Todas as reviews do usuário que ainda NÃO estão na playlist
-$todasReviews      = $repoReview->listarPorUsuario($user->getId());
+$reviewsNaPlaylist = $repoPlaylist->listarReviews($id);
+$idsNaPlaylist = array_column($reviewsNaPlaylist, 'id_review');
+
+
+$todasReviews = $repoReview->listarPorUsuario($user->getId());
 $reviewsDisponiveis = array_filter(
     $todasReviews,
     fn($r) => !in_array($r->getId(), $idsNaPlaylist)
@@ -101,22 +99,19 @@ require_once __DIR__ . '/../includes/header.php';
     </ul>
   <?php endif; ?>
 
-  <!-- Editar nome -->
+
   <form method="POST" action="editarPlaylist.php?id=<?= $id ?>">
     <div class="form-group">
       <label for="nome">Nome da playlist</label>
       <input type="text" name="nome" id="nome"
              value="<?= htmlspecialchars($playlist->getNome()) ?>" required>
     </div>
-    <div class="form-actions">
-      <a href="playlists.php" class="btn-secundario">Voltar</a>
-      <button type="submit" class="btn-primario">Salvar nome</button>
-    </div>
+      <button type="submit" class="btn-primario">Salvar</button>
   </form>
 
   <hr class="secao-divisor">
 
-  <!-- Músicas na playlist -->
+
   <h2 class="secao-titulo">Músicas na playlist</h2>
 
   <?php if (empty($reviewsNaPlaylist)): ?>
@@ -140,7 +135,6 @@ require_once __DIR__ . '/../includes/header.php';
 
   <hr class="secao-divisor">
 
-  <!-- Adicionar músicas -->
   <h2 class="secao-titulo">Adicionar músicas</h2>
 
   <?php if (empty($reviewsDisponiveis)): ?>
@@ -165,7 +159,6 @@ require_once __DIR__ . '/../includes/header.php';
 
   <hr class="secao-divisor">
 
-  <!-- Excluir playlist -->
   <div class="zona-perigo">
     <a href="editarPlaylist.php?id=<?= $id ?>&excluir=1"
        onclick="return confirm('Tem certeza que deseja excluir esta playlist?')"

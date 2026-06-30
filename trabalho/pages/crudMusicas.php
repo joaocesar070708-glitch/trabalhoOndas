@@ -17,24 +17,21 @@ $repoReview = new ReviewRepository();
 
 $erro = null;
 
-$titulo     = '';
+$titulo = '';
 $artistanome = '';
-$album      = '';
-$nota       = '';
-$comentario = '';
+$album = '';
+$nota  = '';
+$comentario  = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $titulo      = trim($_POST['MusTitulo']      ?? '');
+    $titulo = trim($_POST['MusTitulo'] ?? '');
     $artistanome = trim($_POST['MusArtistaNome'] ?? '');
-    $album       = trim($_POST['MusAlbum']       ?? '');
-    $nota        = $_POST['Musnota']             ?? '';
-    $comentario  = trim($_POST['MusReview']      ?? '');
+    $album = trim($_POST['MusAlbum'] ?? '');
+    $nota  = $_POST['Musnota'] ?? '';
+    $comentario  = trim($_POST['MusReview'] ?? '');
 
-    if ($titulo === '') {
-        $erro = 'Informe o nome da música.';
-    } elseif (!ctype_digit((string) $nota) || (int) $nota < 1 || (int) $nota > 5) {
-        $erro = 'Escolha uma nota entre 1 e 5.';
-    } else {
+
+    try {
         $novaReview = Review::novo(
             $user->getId(),
             $titulo,
@@ -47,6 +44,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         header('Location: index.php');
         exit;
+    } catch (InvalidArgumentException $e) {
+        $erro = $e->getMessage();
     }
 }
 
@@ -55,7 +54,6 @@ require_once __DIR__ . '/../includes/header.php';
 
 <div class="page-header">
   <h2>+ Música</h2>
-  <a href="index.php" class="btn btn-ghost">Voltar</a>
 </div>
 
 <?php if ($erro !== null): ?>

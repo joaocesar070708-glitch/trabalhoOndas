@@ -17,8 +17,7 @@ if ($user === null) {
 $id       = isset($_GET['id']) ? (int) $_GET['id'] : 0;
 $playlist = $repoPlaylist->buscarPorId($id);
 
-// Garante que a playlist existe e pertence ao usuário logado
-if ($playlist === null || $playlist->getUsuarioId() !== $user->getId()) {
+if ($playlist === null || !$playlist->pertenceAoUsuario($user->getId())) {
     header('Location: playlists.php');
     exit;
 }
@@ -41,7 +40,6 @@ require_once __DIR__ . '/../includes/header.php';
 
 <div class="playlist-actions">
   <a href="editarPlaylist.php?id=<?= $playlist->getId() ?>" class="btn-primario">Editar playlist</a>
-  <a href="playlists.php" class="btn-secundario">Voltar</a>
 </div>
 
 <?php if (empty($reviews)): ?>
