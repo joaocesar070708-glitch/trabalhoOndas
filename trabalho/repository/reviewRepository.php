@@ -59,19 +59,15 @@ class ReviewRepository {
         return $stmt->execute([':id' => $id]);
     }
 
+/**Atualiza tudo de uma review existente.*/
 
-
-
- 
-/**Atualiza a nota e a descrição de uma review existente.*/
-
-public function atualizar(string $titulo_novo, int $id, int $nota, string $descricao): void
+public function atualizar(string $titulo_novo, int $id, int $nota, string $descricao, string $album, string $artista): void
 {
     $stmt = $this->pdo->prepare('
         UPDATE review
-        SET nota = ?, comentario = ?, titulo_musica = ?
+        SET nota = ?, comentario = ?, titulo_musica = ?, nome_album = ?, nome_artista = ?
         WHERE id_review = ?
     ');
-    $stmt->execute([$nota, $descricao, $titulo_novo, $id]);
+    $stmt->execute([$nota, $descricao, $titulo_novo, $album, $artista, $id]);
 }
 }

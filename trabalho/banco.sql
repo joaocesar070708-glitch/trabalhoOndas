@@ -1,3 +1,12 @@
+CREATE DATABASE IF NOT EXISTS bd_ondas
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+
+  USE bd_ondas;
+
+
+
+
 CREATE TABLE IF NOT EXISTS usuario (
     usuario_id INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(100) NOT NULL,
