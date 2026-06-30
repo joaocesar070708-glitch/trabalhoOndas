@@ -29,13 +29,15 @@ $erros = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nota = isset($_POST['nota']) ? (int) $_POST['nota'] : 0;
     $descricao = isset($_POST['descricao']) ? trim($_POST['descricao']) : '';
-    $titulo = isset($_POST['titulo']) ? trim($_POST['titulo'])    : '';
-    $link = isset($_POST['link']) ? trim($_POST['link'])      : '';
+    $titulo = isset($_POST['titulo']) ? trim($_POST['titulo']) : '';
+    $link = isset($_POST['link']) ? trim($_POST['link']) : '';
     $album = isset($_POST['album']) ? trim($_POST['album']) :'';
     $artista = isset($_POST['artista']) ? trim($_POST['artista']):'';
 
     try {
         $review->definirTitulo($titulo);
+        $review->definirArtista($artista);
+        $review->definirAlbum($album);
         $review->definirNota($nota);
         $review->definirComentario($descricao);
         $review->definirLinkYoutube($link);
@@ -47,6 +49,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $repoReview->atualizar(
             $review->getMusicaTitulo(),
             $id,
+            $review->getArtistaNome(),
+            $review->getAlbumNome(),
             $review->getNota(),
             $review->getDescricao(),
             $review->getLinkYoutube()

@@ -39,13 +39,13 @@ class ReviewRepository {
              VALUES (:usuario_id, :titulo_musica, :nome_artista, :nome_album, :nota, :comentario, :link_youtube)'
         );
         $resultado = $stmt->execute([
-            ':usuario_id'    => $review->getUsuarioId(),
+            ':usuario_id' => $review->getUsuarioId(),
             ':titulo_musica' => $review->getMusicaTitulo(),
-            ':nome_artista'  => $review->getArtistaNome(),
-            ':nome_album'    => $review->getAlbumNome(),
-            ':nota'          => $review->getNota(),
-            ':comentario'    => $review->getDescricao(),
-            ':link_youtube'  => $review->getLinkYoutube(),
+            ':nome_artista' => $review->getArtistaNome(),
+            ':nome_album' => $review->getAlbumNome(),
+            ':nota'  => $review->getNota(),
+            ':comentario' => $review->getDescricao(),
+            ':link_youtube' => $review->getLinkYoutube(),
         ]);
 
         if ($resultado) {
@@ -60,13 +60,13 @@ class ReviewRepository {
         return $stmt->execute([':id' => $id]);
     }
 
-    public function atualizar(string $titulo_novo, int $id, int $nota, string $artista, string $album, string $descricao, ?string $linkYoutube): void
+    public function atualizar(string $titulo_novo, int $id, string $artista, string $album, int $nota, string $comentario, ?string $linkYoutube): void
     {
         $stmt = $this->pdo->prepare('
             UPDATE review
-            SET nota = ?, comentario = ?, titulo_musica = ?, artista = ?, album = ? link_youtube = ?
+            SET titulo_musica = ?, nome_artista = ?, nome_album = ?, nota = ?, comentario = ?, link_youtube = ?
             WHERE id_review = ?
         ');
-        $stmt->execute([$nota, $descricao, $titulo_novo, $artista, $album, $linkYoutube, $id]);
+        $stmt->execute([$titulo_novo, $artista, $album, $nota, $comentario, $linkYoutube, $id]);
     }
 }
