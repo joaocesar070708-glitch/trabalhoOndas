@@ -102,7 +102,7 @@ require_once __DIR__ . '/../includes/header.php';
     <div class="form-group">
       <label for="titulo">Título do álbum</label>
       <input type="text" name="album" id="album"
-             value="<?= htmlspecialchars($_POST['album'] ?? $review->getAlbumNome()) ?>" required>
+             value="<?= htmlspecialchars($_POST['album'] ?? $review->getAlbumNome()) ?>">
     </div>
 
     <div class="form-group">
