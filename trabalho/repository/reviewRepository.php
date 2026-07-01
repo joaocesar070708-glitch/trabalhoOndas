@@ -69,4 +69,5 @@ class ReviewRepository {
         ');
         $stmt->execute([$titulo_novo, $artista, $album, $nota, $comentario, $linkYoutube, $id]);
     }
+
 }

@@ -31,10 +31,8 @@ $tocandoId = !empty($_GET['tocando']) ? (int) $_GET['tocando'] : 0;
 $reviews = $repoReview->listarPorUsuario($user->getId());
 
 
-function renderEstrelas(int $nota): string {
-    $nota = max(0, min(5, $nota));
-    return str_repeat('★', $nota) . str_repeat('☆', 5 - $nota);
-}
+
+
 
 $gradientes = [
     'linear-gradient(135deg,#FF6B4A,#7A2E1E)',
@@ -162,7 +160,7 @@ require_once __DIR__ . '/../includes/header.php';
             <p class="review-artista"><?= htmlspecialchars($review->getArtistaNome()) ?></p>
           <?php endif; ?>
           <p class="review-artista"><?= htmlspecialchars($review->getAlbumNome()) ?></p>
-          <p class="review-estrelas"><?= renderEstrelas($review->getNota()) ?></p>
+          <p class="review-estrelas"><?= $review->renderEstrelas($review->getNota()) ?></p>
           <?php if ($review->getDescricao() !== ''): ?>
             <p class="review-descricao"><?= htmlspecialchars($review->getDescricao()) ?></p>
           <?php endif; ?>

@@ -73,10 +73,6 @@ $reviewsDisponiveis = array_filter(
     fn($r) => !in_array($r->getId(), $idsNaPlaylist)
 );
 
-function renderEstrelas(int $nota): string {
-    $nota = max(0, min(5, $nota));
-    return str_repeat('★', $nota) . str_repeat('☆', 5 - $nota);
-}
 
 require_once __DIR__ . '/../includes/header.php';
 ?>
@@ -124,7 +120,7 @@ require_once __DIR__ . '/../includes/header.php';
           <span>
             <strong><?= htmlspecialchars($r->getMusicaTitulo()) ?></strong>
             — <?= htmlspecialchars($r->getArtistaNome()) ?>
-            <?= renderEstrelas($r->getNota()) ?>
+            <?= $r->renderEstrelas($r->getNota()) ?>
           </span>
           <span class="musica-acoes">
             <?php if ($r->podeTocar()): ?>
@@ -164,7 +160,7 @@ require_once __DIR__ . '/../includes/header.php';
           <span>
             <strong><?= htmlspecialchars($r->getMusicaTitulo()) ?></strong>
             — <?= htmlspecialchars($r->getArtistaNome()) ?>
-            <?= renderEstrelas($r->getNota()) ?>
+            <?= $r->renderEstrelas($r->getNota()) ?>
           </span>
           <form method="POST" action="editarPlaylist.php?id=<?= $id ?>">
             <input type="hidden" name="adicionar_review" value="<?= $r->getId() ?>">

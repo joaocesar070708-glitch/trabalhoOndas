@@ -81,6 +81,10 @@ class Review {
         $this->comentario = trim($comentario);
     }
 
+    function renderEstrelas(int $nota): string {
+    $nota = max(0, min(5, $nota));
+    return str_repeat('★', $nota) . str_repeat('☆', 5 - $nota);
+    }
 
     public function definirLinkYoutube(string $link): void {
         $link = trim($link);
@@ -129,5 +133,5 @@ class Review {
     public function getNota():         int     { return $this->nota; }
     public function getDescricao():    string  { return $this->comentario; }
     public function getCriadoEm():     string  { return $this->criadoEm; }
-    public function getLinkYoutube():  ?string { return $this->linkYoutube; }
+    public function getLinkYoutube(): ?string { return $this->linkYoutube; }
 }
