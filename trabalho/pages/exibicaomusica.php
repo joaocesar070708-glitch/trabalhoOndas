@@ -1,6 +1,7 @@
 <?php
 
-require_once '../repository/ReviewRepository.php';
+require_once __DIR__ '../includes/auth.php';
+require_once __DIR__ '../repository/ReviewRepository.php';
 
 $repoReview = new ReviewRepository();
 $musica = null;
